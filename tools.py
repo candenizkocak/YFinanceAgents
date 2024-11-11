@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import yfinance as yf
 
-def analyze_financials(company: str):
+def analyze_financials(company: str, user_input: str):
   ticker = yf.Ticker(company)
   info = ticker.info
   calendar = ticker.calendar
@@ -14,7 +14,7 @@ def analyze_financials(company: str):
   quarterly_cashflow = ticker.quarterly_cashflow
 
   analyst_generation_config = {
-  "temperature": 1,
+  "temperature": 0.1,
   "top_p": 0.95,
   "top_k": 40,
   "max_output_tokens": 8192,
@@ -22,7 +22,7 @@ def analyze_financials(company: str):
   }
 
   analyst_model = genai.GenerativeModel(
-  model_name="gemini-1.5-flash",
+  model_name="gemini-1.5-pro",
   generation_config=analyst_generation_config,
   system_instruction="You are an expert financial analyst. Given a set of financial statements of a company, I ask you to analyze the company. You will have access to ticker name, calendar, sec filings, income statement, quarterly income statement, balance sheet, quarterly balance sheet, cashflow, quarterly cashflow."
   )
@@ -32,18 +32,18 @@ def analyze_financials(company: str):
   ]
   )
 
-  analyst_response = analyst_chat_session.send_message(f"{ticker}, {info}, {calendar}, {sec_filings}, {income_stmt}, {quarterly_income_stmt}, {balance_sheet}, {quarterly_balance_sheet}, {cashflow}, {quarterly_cashflow}")
+  analyst_response = analyst_chat_session.send_message(f"Given the following data answer the question {user_input}\n, {ticker}, {info}, {calendar}, {sec_filings}, {income_stmt}, {quarterly_income_stmt}, {balance_sheet}, {quarterly_balance_sheet}, {cashflow}, {quarterly_cashflow}")
 
   return analyst_response.text
 
-def analyze_stock(company: str, period: str):
+def analyze_stock(company: str, period: str, user_input: str):
   ticker = yf.Ticker(company)
   info = ticker.info
   hist = ticker.history(period=period)
   hist_metadata = ticker.history_metadata
 
   stock_generation_config = {
-  "temperature": 1,
+  "temperature": 0.1,
   "top_p": 0.95,
   "top_k": 40,
   "max_output_tokens": 8192,
@@ -51,7 +51,7 @@ def analyze_stock(company: str, period: str):
   }
 
   stock_model = genai.GenerativeModel(
-  model_name="gemini-1.5-flash",
+  model_name="gemini-1.5-pro",
   generation_config=stock_generation_config,
   system_instruction="You are an expert financial analyst. Given a set of financial statements of a company, I ask you to analyze the company. You will have access to ticker name, company info, historical data."
   )
@@ -61,11 +61,11 @@ def analyze_stock(company: str, period: str):
   ]
   )
 
-  stock_response = stock_chat_session.send_message(f"{ticker}, {info}, {hist}, {hist_metadata}")
+  stock_response = stock_chat_session.send_message(f"Given the following data answer the question {user_input}\n, {info}, {hist}, {hist_metadata}")
 
   return stock_response.text
 
-def analyze_analysts_estimatations(company: str):
+def analyze_analysts_estimatations(company: str, user_input: str):
   ticker = yf.Ticker(company)
   info = ticker.info
   analyst_price_targets = ticker.analyst_price_targets
@@ -77,7 +77,7 @@ def analyze_analysts_estimatations(company: str):
   growth_estimates = ticker.growth_estimates
 
   analysts_generation_config = {
-  "temperature": 1,
+  "temperature": 0.1,
   "top_p": 0.95,
   "top_k": 40,
   "max_output_tokens": 8192,
@@ -85,7 +85,7 @@ def analyze_analysts_estimatations(company: str):
   }
 
   analysts_model = genai.GenerativeModel(
-  model_name="gemini-1.5-flash",
+  model_name="gemini-1.5-pro",
   generation_config=analysts_generation_config,
   system_instruction="You are an expert financial analyst. Given a set of financial statements of a company, I ask you to analyze the company. You will have access to ticker name, company info, analyst price targets, earnings estimate, revenue estimate, earnings history, eps trend, eps revisions, growth estimates."
   )
@@ -95,16 +95,16 @@ def analyze_analysts_estimatations(company: str):
   ]
   )
 
-  analysts_response = analysts_chat_session.send_message(f"{ticker}, {info}, {analyst_price_targets}, {earnings_estimate}, {revenue_estimate}, {earnings_history}, {eps_trend}, {eps_revisions}, {growth_estimates}")
+  analysts_response = analysts_chat_session.send_message(f"Given the following data answer the question {user_input}\n, {info}, {analyst_price_targets}, {earnings_estimate}, {revenue_estimate}, {earnings_history}, {eps_trend}, {eps_revisions}, {growth_estimates}")
 
   return analysts_response.text
 
-def analyze_news(company: str):
+def analyze_news(company: str, user_input: str):
   ticker = yf.Ticker(company)
   news = ticker.news
 
   news_generation_config = {
-  "temperature": 1,
+  "temperature": 0.1,
   "top_p": 0.95,
   "top_k": 40,
   "max_output_tokens": 8192,
@@ -112,7 +112,7 @@ def analyze_news(company: str):
   }
 
   news_model = genai.GenerativeModel(
-  model_name="gemini-1.5-flash",
+  model_name="gemini-1.5-pro",
   generation_config=news_generation_config,
   system_instruction="You are an expert financial analyst. Given a set of financial news on company, I ask you to analyze the company. You will have access to ticker name, news on yahoo finance."
   )
@@ -122,6 +122,6 @@ def analyze_news(company: str):
   ]
   )
 
-  news_response = news_chat_session.send_message(f"{ticker}, {news}")
+  news_response = news_chat_session.send_message(f"Given the following data answer the question {user_input}\n, {news}")
 
   return news_response.text
